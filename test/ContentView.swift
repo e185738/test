@@ -14,7 +14,7 @@ struct Result: Codable {
     let context: Context
     let id: String
     let graph: [Graph]
-
+    
     enum CodingKeys: String, CodingKey {
         case context = "@context"
         case id = "@id"
@@ -41,7 +41,7 @@ struct Graph: Codable {
     let vAdr: VAdr
     let vTel, vFax: [VFax]
     let dcDescription: [String]
-
+    
     enum CodingKeys: String, CodingKey {
         case id = "@id"
         case type = "@type"
@@ -71,7 +71,7 @@ struct Graph: Codable {
 struct DctermsAlternative: Codable {
     let value: String
     let language: String?
-
+    
     enum CodingKeys: String, CodingKey {
         case value = "@value"
         case language = "@language"
@@ -81,7 +81,7 @@ struct DctermsAlternative: Codable {
 // MARK: - FoafIsPrimaryTopicOf
 struct FoafIsPrimaryTopicOf: Codable {
     let id: String
-
+    
     enum CodingKeys: String, CodingKey {
         case id = "@id"
     }
@@ -90,7 +90,7 @@ struct FoafIsPrimaryTopicOf: Codable {
 // MARK: - VAdr
 struct VAdr: Codable {
     let type, vPostalCode, vLabel: String
-
+    
     enum CodingKeys: String, CodingKey {
         case type = "@type"
         case vPostalCode = "v:postal-code"
@@ -101,7 +101,7 @@ struct VAdr: Codable {
 // MARK: - VFax
 struct VFax: Codable {
     let type, value: String
-
+    
     enum CodingKeys: String, CodingKey {
         case type = "@type"
         case value = "@value"
@@ -116,64 +116,64 @@ var str5: String = ""
 var str6: String = ""
 var str7: String = ""
 
-    // 遷移元
-    struct ContentView: View {
-        var body: some View {
-            NavigationView {
-                NavigationLink(destination: SubContentView()) {
-                    Text("国立情報学研究所")
-                }
-            }.onAppear(perform: loadData)
+// 遷移元
+struct ContentView: View {
+    var body: some View {
+        NavigationView {
+            NavigationLink(destination: SubContentView()) {
+                Text("国立情報学研究所")
+            }
+        }.onAppear(perform: loadData)
+    }
+}
+
+// 遷移先
+struct SubContentView: View {
+    var body: some View {
+        VStack(alignment: .leading){
+            Text(str1)
+            Text(str2)
+            Text(str3)
+            Text(str4)
+            Text(str5)
+            Text(str6)
+            Text(str7)
         }
     }
+    
+}
 
-    // 遷移先
-    struct SubContentView: View {
-        var body: some View {
-            VStack(alignment: .leading){
-                Text(str1)
-                Text(str2)
-                Text(str3)
-                Text(str4)
-                Text(str5)
-                Text(str6)
-                Text(str7)
+
+func loadData() {
+    guard let url = URL(string: "https://ci.nii.ac.jp/library/FA012943.json") else{
+        return
+    }
+    
+    let request = URLRequest(url: url)
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        print("data: \(String(describing: data))")
+        
+        if let data = data{
+            let decorder = JSONDecoder()
+            guard let result = try? decorder.decode(Result.self, from: data) else {
+                print("Json decode エラー")
+                return
             }
+            print(result.graph[0].dcDescription)
+            str1 = result.graph[0].dcDescription[3]
+            str2 = result.graph[0].dcDescription[4]
+            str3 = result.graph[0].dcDescription[8]
+            str4 = result.graph[0].dcDescription[9]
+            str5 = result.graph[0].dcDescription[10]
+            str6 = result.graph[0].dcDescription[11]
+            str7 = result.graph[0].dcDescription[12]
         }
         
-    }
-
-
-    func loadData() {
-        guard let url = URL(string: "https://ci.nii.ac.jp/library/FA012943.json") else{
-            return
-        }
-
-        let request = URLRequest(url: url)
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            print("data: \(String(describing: data))")
-
-            if let data = data{
-                let decorder = JSONDecoder()
-                guard let result = try? decorder.decode(Result.self, from: data) else {
-                    print("Json decode エラー")
-                    return
-                }
-                print(result.graph[0].dcDescription)
-                str1 = result.graph[0].dcDescription[3]
-                str2 = result.graph[0].dcDescription[4]
-                str3 = result.graph[0].dcDescription[8]
-                str4 = result.graph[0].dcDescription[9]
-                str5 = result.graph[0].dcDescription[10]
-                str6 = result.graph[0].dcDescription[11]
-                str7 = result.graph[0].dcDescription[12]
-            }
-
-        }.resume()
-
-}
+    }.resume()
     
+}
+
 
 
 struct ContentView_Previews: PreviewProvider {
